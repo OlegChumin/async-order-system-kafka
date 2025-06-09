@@ -22,6 +22,6 @@ public class OrderProducer {
     }
 
     public void sendOrder(Order order) {
-        kafkaTemplate.send("orders", order.getId(), order);
+        kafkaTemplate.send("orders", order.getId(), order); // order.getId() <- MurmurHash (от MUltiple Results MURmur)
     }
 }
