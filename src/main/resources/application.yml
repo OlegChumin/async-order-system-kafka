@@ -20,6 +20,12 @@ spring:
       auto-offset-reset: earliest
       # Если нет сохранённого offset, читать с самого начала (полезно для dev/тестирования).
 
+      enable-auto-commit: false
+      # ⏪ Поведение, если offset ещё не записан в Kafka (например, первый запуск consumer'а):
+      # - earliest — начать читать с самого начала партиции (старейшие сообщения)
+      # - Это удобно для dev/тестов, чтобы не терять старые сообщения при первом старте
+      # - В проде часто ставят latest, чтобы читать только "свежие" события
+
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 

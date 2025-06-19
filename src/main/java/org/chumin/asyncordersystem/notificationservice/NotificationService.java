@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chumin.asyncordersystem.orderservice.model.Order;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,12 +28,23 @@ public class NotificationService {
      * @param orderRecord Kafka-сообщение с заказом.
      */
     @KafkaListener(topics = "orders", groupId = "notification-group")
-    public void handleOrder(ConsumerRecord<String, Order> orderRecord) {
+    public void handleOrder(ConsumerRecord<String, Order> orderRecord, Acknowledgment ack) {
         Order order = orderRecord.value();
         log.info("[NotificationService] Получен заказ: {}", order);
+    /*
+    TODO:
+            if (notificationAlreadySent(order.getId())) {
+                log.info("⚠️ Уведомление по заказу id={} уже отправлено, пропускаем", order.getId());
+                ack.acknowledge();
+                return;
+            } -> это через БД или через REDIS
+    */
+
 
         sendSmsNotification(order);
         sendEmailNotification(order);
+
+        ack.acknowledge(); // ✅ ручной коммит offset'а
     }
 
     private void sendSmsNotification(Order order) {
